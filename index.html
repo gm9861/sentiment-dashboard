@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加密货币情绪分析平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 30px 0;
+        }
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: rgba(255,255,255,0.6);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .card.full-width {
+            grid-column: 1 / -1;
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sentiment-gauge {
+            text-align: center;
+            padding: 20px;
+        }
+        .gauge-value {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        .gauge-label {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.6);
+            margin-top: 10px;
+        }
+        .gauge-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        .gauge-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .fear { background: linear-gradient(90deg, #ff4444, #ff6b6b); }
+        .neutral { background: linear-gradient(90deg, #ffa500, #ffd700); }
+        .greed { background: linear-gradient(90deg, #00cc66, #00ff88); }
+        
+        .coin-list {
+            list-style: none;
+        }
+        .coin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        .coin-item:hover {
+            background: rgba(255,255,255,0.08);
+        }
+        .coin-name {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .coin-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f7931a, #ffc107);
+        }
+        .sentiment-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge-bullish { background: rgba(0,204,102,0.2); color: #00cc66; }
+        .badge-bearish { background: rgba(255,68,68,0.2); color: #ff4444; }
+        .badge-neutral { background: rgba(255,165,0,0.2); color: #ffa500; }
+        
+        .news-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            border-left: 3px solid #00d4ff;
+        }
+        .news-item a {
+            color: #fff;
+            text-decoration: none;
+            display: block;
+        }
+        .news-item a:hover {
+            color: #00d4ff;
+        }
+        .news-meta {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+            margin-top: 5px;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+        .stat-item {
+            padding: 15px;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 5px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        .refresh-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 加密货币情绪分析平台</h1>
+        <p>实时市场情绪监控 · 舆情分析 · 智能预警</p>
+    </div>
+    
+    <div class="grid">
+        <!-- 全局市场情绪 -->
+        <div class="card">
+            <div class="card-title">📊 全局市场情绪</div>
+            <div class="sentiment-gauge">
+                <div class="gauge-value" id="overall-sentiment">--</div>
+                <div class="gauge-label" id="sentiment-label">加载中...</div>
+                <div class="gauge-bar">
+                    <div class="gauge-fill" id="gauge-fill" style="width: 50%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 恐惧贪婪指数 -->
+        <div class="card">
+            <div class="card-title">😰 恐惧贪婪指数</div>
+            <div class="sentiment-gauge">
+                <div class="gauge-value" id="fear-greed">--</div>
+                <div class="gauge-label" id="fg-label">加载中...</div>
+                <div class="gauge-bar">
+                    <div class="gauge-fill" id="fg-fill" style="width: 50%"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 币种舆情排行榜 -->
+        <div class="card">
+            <div class="card-title">🔥 币种舆情排行榜</div>
+            <ul class="coin-list" id="coin-ranking">
+                <div class="loading">加载中...</div>
+            </ul>
+        </div>
+        
+        <!-- 实时信息流 -->
+        <div class="card">
+            <div class="card-title">📰 实时热点</div>
+            <div id="news-flow">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+        
+        <!-- 统计概览 -->
+        <div class="card full-width">
+            <div class="card-title">📈 今日数据概览</div>
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-value" id="news-count">--</div>
+                    <div class="stat-label">新闻/推文数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="讨论币种">--</div>
+                    <div class="stat-label">讨论币种</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="bullish-ratio">--</div>
+                    <div class="stat-label">看涨比例</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="alert-count">0</div>
+                    <div class="stat-label">活跃预警</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <button class="refresh-btn" onclick="refreshAll()">🔄 刷新数据</button>
+        <p style="margin-top: 15px;">数据来源: CryptoCompare · 更新于 <span id="last-update">--</span></p>
+    </div>
+    
+    <script>
+        // 币种舆情数据（模拟）
+        const coinSentiment = [
+            { name: 'BTC', symbol: 'Bitcoin', sentiment: 'bullish', score: 75, mentions: 12500 },
+            { name: 'ETH', symbol: 'Ethereum', sentiment: 'bullish', score: 68, mentions: 8200 },
+            { name: 'XRP', symbol: 'Ripple', sentiment: 'bullish', score: 72, mentions: 6800 },
+            { name: 'SOL', symbol: 'Solana', sentiment: 'bullish', score: 65, mentions: 5200 },
+            { name: 'DOGE', symbol: 'Dogecoin', sentiment: 'bullish', score: 58, mentions: 4800 },
+            { name: 'SHIB', symbol: 'Shiba Inu', sentiment: 'neutral', score: 52, mentions: 3200 },
+            { name: 'ETH', symbol: 'Ethereum', sentiment: 'bearish', score: 35, mentions: 2100 },
+        ];
+        
+        // 获取恐惧贪婪指数
+        async function fetchFearGreed() {
+            try {
+                const res = await fetch('https://api.alternative.me/fng/?limit=1');
+                const data = await res.json();
+                const fg = data.data[0];
+                
+                const value = parseInt(fg.value);
+                const classification = fg.value_classification;
+                
+                document.getElementById('fear-greed').textContent = value;
+                document.getElementById('fg-label').textContent = classification;
+                
+                const fill = document.getElementById('fg-fill');
+                fill.style.width = value + '%';
+                
+                if (value < 25) {
+                    fill.className = 'gauge-fill fear';
+                } else if (value > 75) {
+                    fill.className = 'gauge-fill greed';
+                } else {
+                    fill.className = 'gauge-fill neutral';
+                }
+                
+                return { value, classification };
+            } catch (e) {
+                console.error('Fear&Greed error:', e);
+                return { value: 50, classification: 'Neutral' };
+            }
+        }
+        
+        // 模拟情绪分析（基于新闻）
+        async function analyzeSentiment() {
+            // 简化版：用恐惧贪婪指数作为全局情绪
+            const fg = await fetchFearGreed();
+            
+            let sentiment, score, label;
+            if (fg.value < 25) {
+                sentiment = 'extreme_fear';
+                score = fg.value;
+                label = '极度恐惧 😱';
+            } else if (fg.value < 45) {
+                sentiment = 'fear';
+                score = fg.value;
+                label = '恐惧 😰';
+            } else if (fg.value < 55) {
+                sentiment = 'neutral';
+                score = fg.value;
+                label = '中性 😐';
+            } else if (fg.value < 75) {
+                sentiment = 'greed';
+                score = fg.value;
+                label = '贪婪 😎';
+            } else {
+                sentiment = 'extreme_greed';
+                score = fg.value;
+                label = '极度贪婪 🤑';
+            }
+            
+            document.getElementById('overall-sentiment').textContent = score;
+            document.getElementById('sentiment-label').textContent = label;
+            
+            const fill = document.getElementById('gauge-fill');
+            fill.style.width = score + '%';
+            if (score < 35) {
+                fill.className = 'gauge-fill fear';
+            } else if (score > 65) {
+                fill.className = 'gauge-fill greed';
+            } else {
+                fill.className = 'gauge-fill neutral';
+            }
+            
+            return { sentiment, score };
+        }
+        
+        // 渲染币种排行榜
+        function renderCoinRanking() {
+            const list = document.getElementById('coin-ranking');
+            const sorted = [...coinSentiment].sort((a, b) => b.mentions - a.mentions);
+            
+            list.innerHTML = sorted.map((coin, i) => `
+                <li class="coin-item">
+                    <div class="coin-name">
+                        <span style="color: rgba(255,255,255,0.4); margin-right: 8px;">${i+1}</span>
+                        <div class="coin-icon"></div>
+                        <div>
+                            <div style="font-weight: 600;">${coin.name}</div>
+                            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.5);">${coin.symbol}</div>
+                        </div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="sentiment-badge badge-${coin.sentiment}">${coin.score}</span>
+                        <div style="font-size: 0.7rem; color: rgba(255,255,255,0.4); margin-top: 3px;">${(coin.mentions/1000).toFixed(1)}K 讨论</div>
+                    </div>
+                </li>
+            `).join('');
+        }
+        
+        // 加载新闻
+        async function fetchNews() {
+            try {
+                const res = await fetch('news.json');
+                const data = await res.json();
+                const container = document.getElementById('news-flow');
+                
+                if (data.news && data.news.length > 0) {
+                    container.innerHTML = data.news.slice(0, 5).map(n => `
+                        <div class="news-item">
+                            <a href="${n.url}" target="_blank">${n.title}</a>
+                            <div class="news-meta">${n.source} · ${n.published_on}</div>
+                        </div>
+                    `).join('');
+                    
+                    document.getElementById('news-count').textContent = data.news.length;
+                }
+            } catch (e) {
+                console.error('News error:', e);
+            }
+        }
+        
+        // 更新统计
+        function updateStats() {
+            document.getElementById('讨论币种').textContent = coinSentiment.length;
+            document.getElementById('bullish-ratio').textContent = Math.round(coinSentiment.filter(c => c.sentiment === 'bullish').length / coinSentiment.length * 100) + '%';
+            document.getElementById('last-update').textContent = new Date().toLocaleTimeString('zh-CN');
+        }
+        
+        // 刷新所有
+        async function refreshAll() {
+            await Promise.all([analyzeSentiment(), fetchNews()]);
+            renderCoinRanking();
+            updateStats();
+        }
+        
+        // 初始化
+        refreshAll();
+        
+        // 每分钟自动刷新
+        setInterval(refreshAll, 60000);
+    </script>
+</body>
+</html>
