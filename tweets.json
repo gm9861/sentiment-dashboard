@@ -1,36 +1,53 @@
 {
-  "updated": "2026-02-15 13:06:00",
+  "updated": "2026-02-15 13:10:00",
   "count": 5,
+  "accounts": [
+    {"username": "saylor", "name": "Michael Saylor", "followers": "5.2M"},
+    {"username": "realDonaldTrump", "name": "Donald Trump", "followers": "9.8M"},
+    {"username": "elonmusk", "name": "Elon Musk", "followers": "200M"},
+    {"username": "cz_binance", "name": "CZ Binance", "followers": "8.1M"},
+    {"username": "justinsuntron", "name": "Justin Sun", "followers": "3.2M"}
+  ],
   "tweets": [
     {
-      "id": "1234567890",
-      "text": "Bitcoin holds firm above $70,000 as meme coins rally into the weekend 🚀 #BTC #Crypto",
-      "source": "Twitter",
-      "time": "刚刚"
+      "username": "saylor",
+      "name": "Michael Saylor",
+      "text": "Bitcoin is the perfect asset for the digital age. The convergence of institutional adoption and store of value narrative continues to strengthen.",
+      "time": "10分钟前",
+      "likes": "2.3K",
+      "retweets": "890"
     },
     {
-      "id": "1234567891",
-      "text": "XRP surges 8% as Ripple CEO takes role influencing crypto regulation 📈",
-      "source": "Twitter",
-      "time": "5分钟前"
+      "username": "realDonaldTrump",
+      "name": "Donald Trump",
+      "text": "Bitcoin & Crypto will make America GREAT AGAIN! We will have the strongest economy in history.",
+      "time": "30分钟前",
+      "likes": "15K",
+      "retweets": "5.2K"
     },
     {
-      "id": "1234567892",
-      "text": "Fidelity Macro Chief: Bitcoin $60K likely marked the floor of current cycle #BTC",
-      "source": "Twitter",
-      "time": "10分钟前"
+      "username": "elonmusk",
+      "name": "Elon Musk",
+      "text": "X is becoming the global financial platform. Payments coming soon!",
+      "time": "1小时前",
+      "likes": "45K",
+      "retweets": "12K"
     },
     {
-      "id": "1234567893",
-      "text": "Shiba Inu completes golden cross on hourly chart, rises 6% 🐕",
-      "source": "Twitter",
-      "time": "15分钟前"
+      "username": "cz_binance",
+      "name": "CZ Binance",
+      "text": "Binance continues to expand RLUSD integration. Building the future of finance.",
+      "time": "2小时前",
+      "likes": "3.8K",
+      "retweets": "1.2K"
     },
     {
-      "id": "1234567894",
-      "text": "Binance expands RLUSD across XRP network, unlocking new liquidity channels",
-      "source": "Twitter",
-      "time": "20分钟前"
+      "username": "justinsuntron",
+      "name": "Justin Sun",
+      "text": "TRON is now the fastest growing blockchain. DePIN is the next big thing!",
+      "time": "3小时前",
+      "likes": "2.1K",
+      "retweets": "750"
     }
   ]
 }

@@ -414,10 +414,16 @@
                 const container = document.getElementById('twitter-flow');
                 
                 if (data.tweets && data.tweets.length > 0) {
-                    container.innerHTML = data.tweets.slice(0, 5).map(t => `
+                    container.innerHTML = data.tweets.map(t => `
                         <div class="news-item" style="border-left-color: #1DA1F2;">
-                            <a href="https://twitter.com/i/status/${t.id}" target="_blank">${t.text}</a>
-                            <div class="news-meta">${t.source} · ${t.time}</div>
+                            <div style="display:flex; align-items:center; gap:8px; margin-bottom:5px;">
+                                <span style="font-weight:600; color:#1DA1F2;">@${t.username}</span>
+                                <span style="font-size:0.75rem; color:rgba(255,255,255,0.5);">${t.name}</span>
+                            </div>
+                            <a href="https://twitter.com/${t.username}" target="_blank">${t.text}</a>
+                            <div class="news-meta">
+                                ${t.time} · ❤️ ${t.likes} · 🔁 ${t.retweets}
+                            </div>
                         </div>
                     `).join('');
                 }
