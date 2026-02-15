@@ -237,6 +237,14 @@
             </div>
         </div>
         
+        <!-- Twitter 推文流 -->
+        <div class="card">
+            <div class="card-title">🐦 Twitter 热点</div>
+            <div id="twitter-flow">
+                <div class="loading">加载中...</div>
+            </div>
+        </div>
+        
         <!-- 统计概览 -->
         <div class="card full-width">
             <div class="card-title">📈 今日数据概览</div>
@@ -263,7 +271,7 @@
     
     <div class="footer">
         <button class="refresh-btn" onclick="refreshAll()">🔄 刷新数据</button>
-        <p style="margin-top: 15px;">数据来源: CryptoCompare · 更新于 <span id="last-update">--</span></p>
+        <p style="margin-top: 15px;">数据来源: CryptoCompare · Twitter · 更新于 <span id="last-update">--</span></p>
     </div>
     
     <script>
@@ -398,6 +406,27 @@
             }
         }
         
+        // 加载 Twitter 推文
+        async function fetchTwitter() {
+            try {
+                const res = await fetch('tweets.json');
+                const data = await res.json();
+                const container = document.getElementById('twitter-flow');
+                
+                if (data.tweets && data.tweets.length > 0) {
+                    container.innerHTML = data.tweets.slice(0, 5).map(t => `
+                        <div class="news-item" style="border-left-color: #1DA1F2;">
+                            <a href="https://twitter.com/i/status/${t.id}" target="_blank">${t.text}</a>
+                            <div class="news-meta">${t.source} · ${t.time}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error('Twitter error:', e);
+                document.getElementById('twitter-flow').innerHTML = '<div class="loading">加载失败</div>';
+            }
+        }
+        
         // 更新统计
         function updateStats() {
             document.getElementById('讨论币种').textContent = coinSentiment.length;
@@ -407,7 +436,7 @@
         
         // 刷新所有
         async function refreshAll() {
-            await Promise.all([analyzeSentiment(), fetchNews()]);
+            await Promise.all([analyzeSentiment(), fetchNews(), fetchTwitter()]);
             renderCoinRanking();
             updateStats();
         }

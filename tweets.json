@@ -1,0 +1,36 @@
+{
+  "updated": "2026-02-15 13:06:00",
+  "count": 5,
+  "tweets": [
+    {
+      "id": "1234567890",
+      "text": "Bitcoin holds firm above $70,000 as meme coins rally into the weekend 🚀 #BTC #Crypto",
+      "source": "Twitter",
+      "time": "刚刚"
+    },
+    {
+      "id": "1234567891",
+      "text": "XRP surges 8% as Ripple CEO takes role influencing crypto regulation 📈",
+      "source": "Twitter",
+      "time": "5分钟前"
+    },
+    {
+      "id": "1234567892",
+      "text": "Fidelity Macro Chief: Bitcoin $60K likely marked the floor of current cycle #BTC",
+      "source": "Twitter",
+      "time": "10分钟前"
+    },
+    {
+      "id": "1234567893",
+      "text": "Shiba Inu completes golden cross on hourly chart, rises 6% 🐕",
+      "source": "Twitter",
+      "time": "15分钟前"
+    },
+    {
+      "id": "1234567894",
+      "text": "Binance expands RLUSD across XRP network, unlocking new liquidity channels",
+      "source": "Twitter",
+      "time": "20分钟前"
+    }
+  ]
+}
